@@ -1,0 +1,4 @@
+/* Minimal global styles for the lab */
+html,body,#__next{height:100%;}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+a{color:inherit;text-decoration:none}
