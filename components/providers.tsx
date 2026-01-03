@@ -12,7 +12,7 @@ import {
 import { mainnet, arbitrum } from 'viem/chains';
 import '@rainbow-me/rainbowkit/styles.css';
 
-const rainbowProjectId = '6422b67d6b2711911d715cd735a4f251';
+const rainbowProjectId = process.env.NEXT_PUBLIC_RAINBOW_PROJECT_ID || '';
 const config = getDefaultConfig({
   appName: 'Sa',
   projectId: rainbowProjectId || '',

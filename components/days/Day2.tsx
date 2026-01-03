@@ -2,7 +2,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount, useBalance } from 'wagmi'
 import React from 'react'
 
-export default function Day1(): JSX.Element {
+export default function Day2(): JSX.Element {
   const { address, isConnected } = useAccount()
   const { data: balanceData, isLoading } = useBalance({ address })
 
@@ -18,6 +18,10 @@ export default function Day1(): JSX.Element {
         <>
           <p>
             <strong>Address:</strong> {address}
+          </p>
+          <p>
+            <strong>Balance:</strong>{' '}
+            {isLoading ? 'Loading...' : `${balanceData?.formatted ?? '—'} ${balanceData?.symbol ?? ''}`}
           </p>
         </>
       ) : (
