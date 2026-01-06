@@ -8,7 +8,7 @@ export default function Day2(): JSX.Element {
 
   return (
     <section>
-      <h2>Day 1 — Balance Reader</h2>
+      <h2>Day 2 — Balance Reader</h2>
 
       <div style={{ marginBottom: 12 }}>
         <ConnectButton />
