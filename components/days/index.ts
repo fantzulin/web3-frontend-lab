@@ -7,6 +7,7 @@ import Day5 from './Day5'
 import Day6 from './Day6'
 import Day7 from './Day7'
 import Day8 from './Day8'
+import Day9 from './Day9'
 
 const dayComponents: Record<number, React.ComponentType> = {
   1: Day1,
@@ -17,6 +18,7 @@ const dayComponents: Record<number, React.ComponentType> = {
   6: Day6,
   7: Day7,
   8: Day8,
+  9: Day9,
 }
 
 export default dayComponents
