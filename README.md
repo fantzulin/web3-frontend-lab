@@ -10,7 +10,7 @@ This project is designed to progressively build a complete Web3 frontend system.
 
 ## 30-Day Feature List
 
-| Day | 古漢字 | Feature | Description |
+| Day | 日期 | Feature | Description |
 |-----|--------|---------|-------------|
 | 01  | 壹     | Wallet Connect | Connect user wallets (MetaMask / WalletConnect) |
 | 02  | 貳     | Balance Reader | Read on-chain asset balances |
