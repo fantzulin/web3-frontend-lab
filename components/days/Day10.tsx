@@ -5,8 +5,9 @@ import {
   useChainId,
   useWriteContract,
   useWaitForTransactionReceipt,
+  useReadContract,
 } from 'wagmi'
-import React from 'react'
+import React, { useState } from 'react'
 import { erc20Abi, parseUnits } from 'viem'
 
 export default function Day10(): JSX.Element {
@@ -49,6 +50,26 @@ export default function Day10(): JSX.Element {
       hash,
     })
 
+  // 读取 allowance - 使用 useReadContract hook
+  const {
+    data: allowance,
+    isLoading: isCheckingAllowance,
+    error: allowanceError,
+    refetch: refetchAllowance,
+  } = useReadContract({
+    address: currentUsdcAddress as `0x${string}` | undefined,
+    abi: erc20Abi,
+    functionName: 'allowance',
+    args: address && currentRouterAddress
+      ? [address, currentRouterAddress as `0x${string}`]
+      : undefined,
+    query: {
+      enabled: !!address && !!currentUsdcAddress && !!currentRouterAddress && isConnected,
+    },
+  })
+
+  const [allowanceStatus, setAllowanceStatus] = useState<string | null>(null)
+
   const handleApproveUSDC = () => {
     if (!currentUsdcAddress || !currentRouterAddress) {
       alert('Unsupported chain')
@@ -65,6 +86,40 @@ export default function Day10(): JSX.Element {
       args: [currentRouterAddress as `0x${string}`, amount],
     })
   }
+
+  // Check allowance >= 1 USDC for Uniswap Router
+  const handleCheckAllowance = () => {
+    if (!currentUsdcAddress || !currentRouterAddress || !address) {
+      alert('Please connect wallet and ensure you are on a supported chain')
+      return
+    }
+
+    // 重新获取 allowance
+    refetchAllowance().then(() => {
+      if (allowance !== undefined) {
+        const requiredAmount = parseUnits('1', 6)
+        const hasEnoughAllowance = allowance >= requiredAmount
+        setAllowanceStatus(
+          hasEnoughAllowance
+            ? `✓ Allowance sufficient: ${allowance.toString()} >= ${requiredAmount.toString()}`
+            : `✗ Allowance insufficient: ${allowance.toString()} < ${requiredAmount.toString()}`
+        )
+      }
+    })
+  }
+
+  // 当 allowance 数据更新时，自动更新状态
+  React.useEffect(() => {
+    if (allowance !== undefined && address) {
+      const requiredAmount = parseUnits('1', 6)
+      const hasEnoughAllowance = allowance >= requiredAmount
+      setAllowanceStatus(
+        hasEnoughAllowance
+          ? `✓ Allowance sufficient: ${allowance.toString()} >= ${requiredAmount.toString()}`
+          : `✗ Allowance insufficient: ${allowance.toString()} < ${requiredAmount.toString()}`
+      )
+    }
+  }, [allowance, address])
 
   return (
     <section>
@@ -90,6 +145,30 @@ export default function Day10(): JSX.Element {
               ? 'Confirming...'
               : 'Approve 1 USDC'}
           </button>
+          <div style={{ marginTop: 16 }}>
+            <p>Check USDC allowance for Uniswap Router</p>
+            <button
+              onClick={handleCheckAllowance}
+              disabled={isCheckingAllowance || !currentUsdcAddress || !currentRouterAddress || !address}
+            >
+              {isCheckingAllowance ? 'Checking allowance...' : 'Check allowance'}
+            </button>
+            {allowanceError && (
+              <p style={{ color: 'red', marginTop: 8 }}>
+                Error checking allowance: {allowanceError.message}
+              </p>
+            )}
+            {allowanceStatus && (
+              <p style={{ marginTop: 8, color: allowanceStatus.startsWith('✓') ? 'green' : 'orange' }}>
+                {allowanceStatus}
+              </p>
+            )}
+            {allowance !== undefined && (
+              <p style={{ marginTop: 8, fontSize: '14px', color: '#666' }}>
+                Current allowance: {allowance.toString()}
+              </p>
+            )}
+          </div>
           {approveError && (
             <p style={{ color: 'red', marginTop: 8 }}>
               Error: {approveError.message}
